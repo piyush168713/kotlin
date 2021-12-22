@@ -73,13 +73,31 @@ public:
         return std_support::span<void* const>(buffer_.data(), size());
     }
 
+    bool operator==(const StackTrace& other) const noexcept {
+        return std::equal(begin(), end(), other.begin(), other.end());
+    }
+
+    bool operator!=(const StackTrace& other) const noexcept {
+        return !(*this == other);
+    }
+
     // Maximal stacktrace depth that can be collected due to implementation limitations.
     // Note that this limitation doesn't take into account the skipFrames parameter.
     // I.e. real size of a returned stacktrace will be limited by (maxDepth - skipFrames).
     static constexpr size_t maxDepth =
             std::min(internal::GetMaxStackTraceDepth<internal::StackTraceCapacityKind::kFixed>(), Capacity);
 
+    NO_INLINE static StackTrace current(size_t skipFrames, size_t depthLimit) {
+        StackTrace result;
+        auto fullTraceSize = internal::GetCurrentStackTrace(
+                skipFrames + 1, std_support::span<void*>(result.buffer_.data(), result.buffer_.size()));
+        result.size_ = std::min(fullTraceSize, depthLimit);
+        return result;
+    }
+
     NO_INLINE static StackTrace current(size_t skipFrames = 0) noexcept {
+        // Avoid delegating to current(skipFrames, depth)
+        // to have the same number of "service" frames for both overloads.
         StackTrace result;
         result.size_ = internal::GetCurrentStackTrace(
                 skipFrames + 1, std_support::span<void*>(result.buffer_.data(), result.buffer_.size()));
@@ -123,12 +141,32 @@ public:
         return std_support::span<void* const>(buffer_.data(), size());
     }
 
+    bool operator==(const StackTrace& other) const noexcept {
+        return std::equal(begin(), end(), other.begin(), other.end());
+    }
+
+    bool operator!=(const StackTrace& other) const noexcept {
+        return !(*this == other);
+    }
+
     // Maximal stacktrace depth that can be collected due to implementation limitations.
     // Note that this limitation doesn't take into account the skipFrames parameter.
     // I.e. real size of a returned stacktrace will be limited by (maxDepth - skipFrames).
     static constexpr size_t maxDepth = internal::GetMaxStackTraceDepth<internal::StackTraceCapacityKind::kDynamic>();
 
+    NO_INLINE static StackTrace current(size_t skipFrames, size_t depthLimit) {
+        StackTrace result;
+        auto traceElements = internal::GetCurrentStackTrace(skipFrames + 1);
+        if (traceElements.size() > depthLimit) {
+            traceElements.resize(depthLimit);
+        }
+        result.buffer_ = traceElements;
+        return result;
+    }
+
     NO_INLINE static StackTrace current(size_t skipFrames = 0) {
+        // Avoid delegating to current(skipFrames, depth)
+        // to have the same number of "service" frames for both overloads.
         StackTrace result;
         result.buffer_ = internal::GetCurrentStackTrace(skipFrames + 1);
         return result;
