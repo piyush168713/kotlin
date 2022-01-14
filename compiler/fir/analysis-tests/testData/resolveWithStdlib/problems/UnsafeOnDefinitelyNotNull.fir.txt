@@ -1,0 +1,6 @@
+FILE: Test.kt
+    public final fun <T : R|BaseModel?|> foo(cls: R|java/lang/Class<T>?|): R|kotlin/Unit| {
+        lval mapper: R|Mapper| = R|/Mapper.Mapper|()
+        lval result: R|T| = R|<local>/mapper|.R|/Mapper.readValue|<R|ft<T, T?>|>(R|<local>/cls|)!!
+        R|<local>/result|.<Inapplicable(UNSAFE_CALL): /BaseModel.bar># = String(Omega)
+    }

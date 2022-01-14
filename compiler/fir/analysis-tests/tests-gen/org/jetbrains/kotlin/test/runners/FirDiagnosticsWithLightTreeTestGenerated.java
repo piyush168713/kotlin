@@ -5756,6 +5756,12 @@ public class FirDiagnosticsWithLightTreeTestGenerated extends AbstractFirDiagnos
             }
 
             @Test
+            @TestMetadata("UnsafeOnDefinitelyNotNull.kt")
+            public void testUnsafeOnDefinitelyNotNull() throws Exception {
+                runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/problems/UnsafeOnDefinitelyNotNull.kt");
+            }
+
+            @Test
             @TestMetadata("valueOfOrNull.kt")
             public void testValueOfOrNull() throws Exception {
                 runTest("compiler/fir/analysis-tests/testData/resolveWithStdlib/problems/valueOfOrNull.kt");
