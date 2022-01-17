@@ -169,10 +169,6 @@ internal open class ObjCExportCodeGeneratorBase(codegen: CodeGenerator) : ObjCCo
         return callFromBridge(llvmDeclarations, args, resultLifetime)
     }
 
-    // TODO: currently bridges don't have any custom `landingpad`s,
-    // so it is correct to use [callAtFunctionScope] here.
-    // However, exception handling probably should be refactored
-    // (e.g. moved from `IrToBitcode.kt` to [FunctionGenerationContext]).
     fun ObjCExportFunctionGenerationContext.callFromBridge(
             function: LlvmCallable,
             args: List<LLVMValueRef>,
